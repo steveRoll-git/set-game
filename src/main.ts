@@ -1,7 +1,7 @@
 import "./style.css"
 import { Application, Container } from "pixi.js"
 import { loadSymbolImages } from "./symbolImages"
-import { cardHeight, cardWidth, createCardSprite } from "./createCardSprite"
+import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
 
 const numCardsOnTable = 12
 
@@ -68,6 +68,7 @@ function newState(): GameState {
     autoDensity: true,
     resolution: window.devicePixelRatio,
     antialias: true,
+    backgroundColor: 0xc4c4c4,
   })
 
   await loadSymbolImages()
@@ -82,7 +83,7 @@ function newState(): GameState {
     const card = state.cards[i]
     const x = i % boardWidth
     const y = Math.floor(i / boardWidth)
-    const cardSprite = createCardSprite(card)
+    const cardSprite = new CardSprite(card)
     tableCards.addChild(cardSprite)
     cardSprite.x = x * (cardWidth + cardGap) + cardWidth / 2
     cardSprite.y = y * (cardHeight + cardGap) + cardHeight / 2
