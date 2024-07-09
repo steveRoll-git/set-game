@@ -2,9 +2,9 @@ import { Container, Graphics, Sprite } from "pixi.js"
 import { getSymbolTexture } from "./symbolImages"
 import { Card } from "./main"
 
-const cardWidth = 166
-const cardHeight = 109
-const colors = [0xed1c24, 0x16a751, 0x16a751]
+export const cardWidth = 166
+export const cardHeight = 109
+const colors = [0xed1c24, 0x16a751, 0x613394]
 const symbolPadding = 10
 
 export function createCardSprite(card: Card) {
