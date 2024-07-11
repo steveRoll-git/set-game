@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@assetpack/cli": "^0.8.0",
+    "@assetpack/core": "^0.8.0",
+    "@assetpack/plugin-texture-packer": "^0.8.0",
+    "@types/node": "^20.14.10",
     "typescript": "^5.2.2",
     "vite": "^5.3.1"
   },

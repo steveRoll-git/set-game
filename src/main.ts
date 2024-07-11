@@ -1,6 +1,5 @@
 import "./style.css"
-import { Application, Container } from "pixi.js"
-import { loadSymbolImages } from "./symbolImages"
+import { Application, Assets, Container, Spritesheet } from "pixi.js"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
 
 const numCardsOnTable = 12
@@ -58,6 +57,11 @@ function newState(): GameState {
     cards,
   }
 }
+
+export let cardsSheet: Spritesheet
+
+export const getSymbolTexture = (shape: number, fill: number) =>
+  cardsSheet.textures[`symbols/${shape}${fill}.png`]
 ;(async () => {
   const app = new Application()
 
@@ -71,7 +75,7 @@ function newState(): GameState {
     backgroundColor: 0xc4c4c4,
   })
 
-  await loadSymbolImages()
+  cardsSheet = await Assets.load("assets/cards/cards.json")
 
   document.body.appendChild(app.canvas)
 

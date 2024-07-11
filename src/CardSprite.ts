@@ -1,6 +1,5 @@
 import { BlurFilter, Container, Graphics, Sprite } from "pixi.js"
-import { Card } from "./main"
-import { getSymbolTexture } from "./symbolImages"
+import { Card, getSymbolTexture } from "./main"
 
 export const cardWidth = 166
 export const cardHeight = 109
