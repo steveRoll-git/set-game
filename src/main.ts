@@ -1,11 +1,11 @@
 import "./style.css"
 import { Application, Assets, Container, Spritesheet } from "pixi.js"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
+import { Group } from "tweedle.js"
 
 const numCardsOnTable = 12
 
 const boardWidth = 3
-const boardHeight = 4
 const cardGap = 6
 
 /**
@@ -58,40 +58,47 @@ function newState(): GameState {
   }
 }
 
-export let cardsSheet: Spritesheet
+let cardsSheet: Spritesheet
 
 export const getSymbolTexture = (shape: number, fill: number) =>
   cardsSheet.textures[`symbols/${shape}${fill}.png`]
-;(async () => {
-  const app = new Application()
 
-  await app.init({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    resizeTo: window,
-    autoDensity: true,
-    resolution: window.devicePixelRatio,
-    antialias: true,
-    backgroundColor: 0xc4c4c4,
-  })
+{
+  ;(async () => {
+    const app = new Application()
 
-  cardsSheet = await Assets.load("assets/cards/cards.json")
+    await app.init({
+      width: window.innerWidth,
+      height: window.innerHeight,
+      resizeTo: window,
+      autoDensity: true,
+      resolution: window.devicePixelRatio,
+      antialias: true,
+      backgroundColor: 0xc4c4c4,
+    })
 
-  document.body.appendChild(app.canvas)
+    cardsSheet = await Assets.load("assets/cards/cards.json")
 
-  const state = newState()
+    document.body.appendChild(app.canvas)
 
-  const tableCards = new Container()
+    const state = newState()
 
-  for (let i = 0; i < state.cards.length; i++) {
-    const card = state.cards[i]
-    const x = i % boardWidth
-    const y = Math.floor(i / boardWidth)
-    const cardSprite = new CardSprite(card)
-    tableCards.addChild(cardSprite)
-    cardSprite.x = x * (cardWidth + cardGap) + cardWidth / 2
-    cardSprite.y = y * (cardHeight + cardGap) + cardHeight / 2
-  }
+    const tableCards = new Container()
 
-  app.stage.addChild(tableCards)
-})()
+    for (let i = 0; i < state.cards.length; i++) {
+      const card = state.cards[i]
+      const x = i % boardWidth
+      const y = Math.floor(i / boardWidth)
+      const cardSprite = new CardSprite(card)
+      tableCards.addChild(cardSprite)
+      cardSprite.x = x * (cardWidth + cardGap) + cardWidth / 2
+      cardSprite.y = y * (cardHeight + cardGap) + cardHeight / 2
+    }
+
+    app.stage.addChild(tableCards)
+
+    app.ticker.add(() => {
+      Group.shared.update()
+    })
+  })()
+}
