@@ -16,12 +16,17 @@ export class GameContainer extends Container {
   /**
    * The cards that are currently on the table.
    */
-  cards: Card[]
+  cards: CardSprite[]
 
   /**
    * The cards in the deck that haven't been placed yet.
    */
   deck: Card[]
+
+  /**
+   * The cards that the user has selected.
+   */
+  selectedCards: Set<CardSprite> = new Set()
 
   constructor() {
     super()
@@ -44,19 +49,31 @@ export class GameContainer extends Container {
     this.cards = []
 
     for (let i = 0; i < numCardsOnTable; i++) {
-      this.cards.push(this.deck.pop()!)
-    }
-
-    this.setsFound = 0
-
-    for (let i = 0; i < this.cards.length; i++) {
-      const card = this.cards[i]
+      const card = this.deck.pop()!
       const x = i % boardWidth
       const y = Math.floor(i / boardWidth)
       const cardSprite = new CardSprite(card)
       this.addChild(cardSprite)
       cardSprite.x = x * (cardWidth + cardGap) + cardWidth / 2
       cardSprite.y = y * (cardHeight + cardGap) + cardHeight / 2
+
+      cardSprite.onSelect = () => {
+        this.selectedCards.add(cardSprite)
+        if (this.selectedCards.size == 3) {
+          for (const card of this.selectedCards.values()) {
+            card.playWrongAnimation()
+          }
+          this.selectedCards.clear()
+        }
+      }
+
+      cardSprite.onDeselect = () => {
+        this.selectedCards.delete(cardSprite)
+      }
+
+      this.cards.push(cardSprite)
     }
+
+    this.setsFound = 0
   }
 }
