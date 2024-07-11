@@ -23,7 +23,14 @@ const isSet = (cards: Card[]) => {
 const numCardsOnTable = 12
 
 const boardWidth = 3
+const boardHeight = 4
 const cardGap = 6
+const outerPadding = 8
+
+export const totalBoardWidth =
+  boardWidth * (cardWidth + cardGap) - cardGap + outerPadding * 2
+export const totalBoardHeight =
+  boardHeight * (cardHeight + cardGap) - cardGap + outerPadding * 2
 
 export class GameContainer extends Container {
   /**
@@ -72,8 +79,8 @@ export class GameContainer extends Container {
       const y = Math.floor(i / boardWidth)
       const cardSprite = new CardSprite(card)
       this.addChild(cardSprite)
-      cardSprite.x = x * (cardWidth + cardGap) + cardWidth / 2
-      cardSprite.y = y * (cardHeight + cardGap) + cardHeight / 2
+      cardSprite.x = outerPadding + x * (cardWidth + cardGap) + cardWidth / 2
+      cardSprite.y = outerPadding + y * (cardHeight + cardGap) + cardHeight / 2
 
       cardSprite.onSelect = () => {
         this.selectedCards.add(cardSprite)
