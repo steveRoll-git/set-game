@@ -1,12 +1,7 @@
 import "./style.css"
 import { Application, Assets, Spritesheet } from "pixi.js"
 import { Group } from "tweedle.js"
-import { GameContainer } from "./GameContainer"
-
-/**
- * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 3.
- */
-export type Card = [number, number, number, number]
+import { GameContainer } from "./Game"
 
 let cardsSheet: Spritesheet
 

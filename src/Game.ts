@@ -1,6 +1,24 @@
 import { Container } from "pixi.js"
-import { Card } from "./main"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
+
+/**
+ * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 3.
+ */
+export type Card = [number, number, number, number]
+
+const isSet = (cards: Card[]) => {
+  for (let i = 0; i < 4; i++) {
+    if (
+      !(
+        (cards[0][i] == cards[1][i]) == (cards[1][i] == cards[2][i]) &&
+        (cards[0][i] == cards[2][i]) == (cards[1][i] == cards[2][i])
+      )
+    ) {
+      return false
+    }
+  }
+  return true
+}
 
 const numCardsOnTable = 12
 
@@ -60,8 +78,15 @@ export class GameContainer extends Container {
       cardSprite.onSelect = () => {
         this.selectedCards.add(cardSprite)
         if (this.selectedCards.size == 3) {
-          for (const card of this.selectedCards.values()) {
-            card.playWrongAnimation()
+          if (isSet([...this.selectedCards.values()].map((s) => s.card))) {
+            for (const card of this.selectedCards.values()) {
+              card.zIndex = 1
+              card.playCorrectAnimation()
+            }
+          } else {
+            for (const card of this.selectedCards.values()) {
+              card.playWrongAnimation()
+            }
           }
           this.selectedCards.clear()
         }
