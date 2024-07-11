@@ -59,7 +59,7 @@ export class CardSprite extends Container {
     this.selected = false
     this.eventMode = "static"
 
-    this.on("pointerover", (_e) => {
+    this.on("mouseover", (_e) => {
       if (!this.selected) {
         new Tween(cardContent)
           .to({ x: -hoverOffset, y: -hoverOffset }, hoverAnimDuration)
@@ -67,13 +67,14 @@ export class CardSprite extends Container {
       }
     })
 
-    this.on("pointerout", (_e) => {
+    this.on("mouseout", (_e) => {
       if (!this.selected) {
         new Tween(cardContent).to({ x: 0, y: 0 }, hoverAnimDuration).start()
       }
     })
 
-    this.on("pointerdown", (_e) => {
+    this.on("pointerdown", (e) => {
+      const isTouch = e.pointerType == "touch"
       this.selected = !this.selected
       if (this.selected) {
         new Tween(cardContent)
@@ -85,7 +86,12 @@ export class CardSprite extends Container {
           .start()
         new Tween(selectionOutline).to({ alpha: 1 }, hoverAnimDuration).start()
       } else {
-        new Tween(cardContent).to({ x: 0, y: 0 }, hoverAnimDuration).start()
+        new Tween(cardContent)
+          .to(
+            { x: isTouch ? 0 : -hoverOffset, y: isTouch ? 0 : -hoverOffset },
+            hoverAnimDuration
+          )
+          .start()
         new Tween(shadowBlurFilter).to({ blur: 2 }, hoverAnimDuration).start()
         new Tween(shadow.scale).to({ x: 1, y: 1 }, hoverAnimDuration).start()
         new Tween(selectionOutline).to({ alpha: 0 }, hoverAnimDuration).start()
