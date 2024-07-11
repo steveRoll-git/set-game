@@ -60,12 +60,11 @@ export class GameContainer extends Container {
       for (let b = 0; b < 3; b++) {
         for (let c = 0; c < 3; c++) {
           for (let d = 0; d < 3; d++) {
-            this.deck.splice(Math.floor(Math.random() * this.deck.length), 0, [
-              a,
-              b,
-              c,
-              d,
-            ])
+            this.deck.splice(
+              Math.floor(Math.random() * (this.deck.length + 1)),
+              0,
+              [a, b, c, d]
+            )
           }
         }
       }
