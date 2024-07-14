@@ -9,9 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@assetpack/cli": "^0.8.0",
-    "@assetpack/core": "^0.8.0",
-    "@assetpack/plugin-texture-packer": "^0.8.0",
+    "@assetpack/core": "^1.0.0-rc",
     "@types/node": "^20.14.10",
     "pixi.js": "^8.2.3",
     "tweedle.js": "^2.1.0",

@@ -22,7 +22,7 @@ export const getSymbolTexture = (shape: number, fill: number) =>
       backgroundColor: 0xc4c4c4,
     })
 
-    cardsSheet = await Assets.load("assets/cards/cards.json")
+    cardsSheet = await Assets.load("assets/cards.json")
 
     gameContainer.appendChild(app.canvas)
 
