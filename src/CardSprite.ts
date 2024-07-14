@@ -79,6 +79,13 @@ export class CardSprite extends Container {
 
     this.selected = false
     this.eventMode = "static"
+    this.hitArea = {
+      contains(x, y) {
+        x += cardWidth / 2
+        y += cardHeight / 2
+        return x >= 0 && y >= 0 && x < cardWidth && y < cardHeight
+      },
+    }
 
     this.on("mouseover", (_e) => {
       if (!this.selected) {
