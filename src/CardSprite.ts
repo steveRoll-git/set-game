@@ -20,6 +20,7 @@ const outlineColors = {
 
 export class CardSprite extends Container {
   readonly card: Card
+  readonly index: number
 
   selected: boolean
   onSelect?: () => void
@@ -34,10 +35,11 @@ export class CardSprite extends Container {
   cardContent: Container
   cardHoverTween?: Tween<Container>
 
-  constructor(card: Card) {
+  constructor(card: Card, index: number) {
     super()
 
     this.card = card
+    this.index = index
 
     this.shadow = new Graphics()
     this.shadow.roundRect(0, 0, cardWidth, cardHeight, 12).fill("00000055")
@@ -173,13 +175,13 @@ export class CardSprite extends Container {
         outlineRing.x = this.x + this.cardContent.x
         outlineRing.y = this.y + this.cardContent.y
         outlineRing.scale.copyFrom(this.cardContent.scale)
-        outlineRing.zIndex = 2
+        outlineRing.zIndex = 50
         new Tween(outlineRing)
           .to({ scale: { x: 1.4, y: 1.4 }, alpha: 0 }, 1000)
           .easing(Easing.Cubic.Out)
           .start()
           .onComplete(() => {
-            this.parent.removeChild(outlineRing)
+            outlineRing.removeFromParent()
           })
         this.parent.addChild(outlineRing)
         new Tween(this.cardContent)
@@ -192,6 +194,9 @@ export class CardSprite extends Container {
               .to({ scale: { x: 0, y: 0 } }, 450)
               .easing(Easing.Cubic.In)
               .start()
+              .onComplete(() => {
+                this.removeFromParent()
+              })
           })
       })
   }
