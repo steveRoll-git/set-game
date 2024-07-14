@@ -1,4 +1,4 @@
-import { BlurFilter, Container, Graphics, Sprite } from "pixi.js"
+import { BlurFilter, Container, Graphics, Rectangle, Sprite } from "pixi.js"
 import { getSymbolTexture } from "./main"
 import { Easing, Tween } from "tweedle.js"
 import { Card } from "./Game"
@@ -44,6 +44,7 @@ export class CardSprite extends Container {
     this.shadow = new Graphics()
     this.shadow.roundRect(0, 0, cardWidth, cardHeight, 12).fill("00000055")
     this.shadowBlurFilter = new BlurFilter({ strength: 2 })
+    this.shadow.filterArea = new Rectangle(0, 0, cardWidth, cardHeight)
     this.shadow.filters = [this.shadowBlurFilter]
     this.shadow.pivot.x = cardWidth / 2
     this.shadow.pivot.y = cardHeight / 2
