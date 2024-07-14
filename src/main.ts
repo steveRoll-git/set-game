@@ -18,7 +18,7 @@ export const getSymbolTexture = (shape: number, fill: number) =>
       resizeTo: gameContainer,
       autoDensity: true,
       resolution: window.devicePixelRatio,
-      antialias: true,
+      antialias: window.devicePixelRatio <= 1,
       backgroundColor: 0xc4c4c4,
     })
 
