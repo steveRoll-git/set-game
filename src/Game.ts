@@ -21,6 +21,21 @@ const isSet = (cards: Card[]) => {
   return true
 }
 
+const getAllSets = (cards: Card[]) => {
+  const sets = []
+  for (let i = 0; i < cards.length - 2; i++) {
+    for (let j = i + 1; j < cards.length - 1; j++) {
+      for (let k = j + 1; k < cards.length; k++) {
+        const set = [cards[i], cards[j], cards[k]]
+        if (isSet(set)) {
+          sets.push(set)
+        }
+      }
+    }
+  }
+  return sets
+}
+
 const numCardsOnTable = 12
 
 const boardWidth = 3
@@ -81,13 +96,28 @@ export class GameContainer extends Container {
     this.cards = []
 
     for (let i = 0; i < numCardsOnTable; i++) {
-      this.addCard(this.deck.pop()!, i, i * 60)
+      this.addCard(i, i * 60, i == numCardsOnTable - 1)
     }
 
     this.setsFound = 0
   }
 
-  addCard(card: Card, index: number, appearDelay: number) {
+  addCard(index: number, appearDelay: number, ensureSet: boolean = false) {
+    let card
+    if (ensureSet) {
+      // Go through every remaining card in the deck and place it in the new spot until a set can be found.
+      const testBoard = this.cards.map((c) => c.card)
+      let chosenCard
+      let chosenIndex = -1
+      do {
+        chosenIndex++
+        chosenCard = this.deck[chosenIndex]
+        testBoard[index] = chosenCard
+      } while (getAllSets(testBoard).length == 0)
+      card = this.deck.splice(chosenIndex, 1)[0]
+    } else {
+      card = this.deck.pop()!
+    }
     const cardSprite = new CardSprite(card, index)
     this.addChild(cardSprite)
     this.cardAppearAnimation(cardSprite, appearDelay)
@@ -110,15 +140,10 @@ export class GameContainer extends Container {
         (a, b) => a.index - b.index
       )
       if (isSet(setCards.map((s) => s.card))) {
-        for (const card of setCards) {
-          card.zIndex = 50
+        for (const [i, card] of setCards.entries()) {
           card.playCorrectAnimation()
 
-          this.addCard(
-            this.deck.pop()!,
-            card.index,
-            900 + setCards.indexOf(card) * 70
-          )
+          this.addCard(card.index, 900 + setCards.indexOf(card) * 70, i == 2)
         }
       } else {
         for (const card of setCards) {

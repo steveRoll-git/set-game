@@ -170,6 +170,7 @@ export class CardSprite extends Container {
     this.enabled = false
     this.selectionOutline.tint = outlineColors.correct
     this.background.tint = 0xfffbed
+    this.zIndex = 50
     this.cardHoverTween?.end()
     new Tween(this.cardContent)
       .to({ scale: { x: 1.1, y: 1.1 } }, 100)
