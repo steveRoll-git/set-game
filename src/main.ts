@@ -1,9 +1,11 @@
 import "./style.css"
 import { Application, Assets, Spritesheet } from "pixi.js"
 import { Group } from "tweedle.js"
-import { GameContainer, totalBoardWidth } from "./Game"
+import { GameContainer, totalBoardHeight, totalBoardWidth } from "./Game"
 
 let cardsSheet: Spritesheet
+
+export let bottomStatus: HTMLElement
 
 export const getSymbolTexture = (shape: number, fill: number) =>
   cardsSheet.textures[`symbols/${shape}${fill}.png`]
@@ -12,7 +14,8 @@ export const getSymbolTexture = (shape: number, fill: number) =>
   ;(async () => {
     const app = new Application()
 
-    const gameContainer = document.getElementById("game-container")!
+    const gameContainer = document.getElementById("canvas-container")!
+    bottomStatus = document.getElementById("bottom-status")!
 
     await app.init({
       resizeTo: gameContainer,
@@ -30,7 +33,9 @@ export const getSymbolTexture = (shape: number, fill: number) =>
     app.stage.addChild(game)
 
     const updateSize = () => {
-      game.scale.set(app.renderer.width / totalBoardWidth)
+      const scale = app.renderer.width / totalBoardWidth
+      game.scale.set(scale)
+      game.y = app.renderer.height / 2 - (totalBoardHeight / 2) * scale
     }
     updateSize()
 

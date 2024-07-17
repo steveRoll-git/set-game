@@ -1,6 +1,7 @@
 import { Container } from "pixi.js"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
 import { Easing, Tween } from "tweedle.js"
+import { bottomStatus } from "./main"
 
 /**
  * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 3.
@@ -78,6 +79,7 @@ export class GameContainer extends Container {
 
   constructor() {
     super()
+
     this.deck = []
     for (let a = 0; a < 3; a++) {
       for (let b = 0; b < 3; b++) {
@@ -92,6 +94,7 @@ export class GameContainer extends Container {
         }
       }
     }
+    this.updateStatusText(this.deck.length)
 
     this.cards = []
 
@@ -118,9 +121,12 @@ export class GameContainer extends Container {
     } else {
       card = this.deck.pop()!
     }
+    const newCardCount = this.deck.length
     const cardSprite = new CardSprite(card, index)
     this.addChild(cardSprite)
-    this.cardAppearAnimation(cardSprite, appearDelay)
+    this.cardAppearAnimation(cardSprite, appearDelay).onAfterDelay(() => {
+      this.updateStatusText(newCardCount)
+    })
 
     cardSprite.onSelect = () => {
       this.selectedCards.add(cardSprite)
@@ -161,7 +167,7 @@ export class GameContainer extends Container {
     card.y = totalBoardHeight + cardHeight
     card.zIndex = 50
     const toProps = this.cardPosition(x, y)
-    new Tween(card)
+    return new Tween(card)
       .to(toProps, 500)
       .easing(Easing.Quintic.Out)
       .delay(delay)
@@ -169,5 +175,9 @@ export class GameContainer extends Container {
       .onComplete(() => {
         card.zIndex = card.index
       })
+  }
+
+  updateStatusText(cards: number) {
+    bottomStatus.innerText = `${cards} cards left`
   }
 }
