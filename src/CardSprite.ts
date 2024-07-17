@@ -19,6 +19,15 @@ const outlineColors = {
 }
 
 export class CardSprite extends Container {
+  static backgroundGraphics: Graphics
+
+  static {
+    this.backgroundGraphics = new Graphics()
+    this.backgroundGraphics
+      .roundRect(0, 0, cardWidth, cardHeight, 12)
+      .fill(0xffffff)
+  }
+
   readonly card: Card
   readonly index: number
 
@@ -52,8 +61,7 @@ export class CardSprite extends Container {
 
     this.cardContent = new Container()
 
-    this.background = new Graphics()
-    this.background.roundRect(0, 0, cardWidth, cardHeight, 12).fill(0xffffff)
+    this.background = new Graphics(CardSprite.backgroundGraphics.context)
     this.cardContent.addChild(this.background)
 
     const symbolContainer = new Container()
