@@ -1,7 +1,8 @@
 import { Container } from "pixi.js"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
-import { Easing, Tween } from "tweedle.js"
+import { Easing } from "tweedle.js"
 import { bottomStatus } from "./main"
+import { MonitoredTween as Tween } from "./MonitoredTween"
 
 /**
  * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 3.

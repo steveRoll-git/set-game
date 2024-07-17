@@ -1,6 +1,7 @@
 import { BlurFilter, Container, Graphics, Rectangle, Sprite } from "pixi.js"
 import { getSymbolTexture } from "./main"
-import { Easing, Tween } from "tweedle.js"
+import { MonitoredTween as Tween } from "./MonitoredTween"
+import { Easing } from "tweedle.js"
 import { Card } from "./Game"
 
 export const cardWidth = 166

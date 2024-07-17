@@ -3,6 +3,8 @@ import { Application, Assets, Spritesheet } from "pixi.js"
 import { Group } from "tweedle.js"
 import { GameContainer, totalBoardHeight, totalBoardWidth } from "./Game"
 
+export const app = new Application()
+
 let cardsSheet: Spritesheet
 
 export let bottomStatus: HTMLElement
@@ -12,8 +14,6 @@ export const getSymbolTexture = (shape: number, fill: number) =>
 
 {
   ;(async () => {
-    const app = new Application()
-
     const gameContainer = document.getElementById("canvas-container")!
     bottomStatus = document.getElementById("bottom-status")!
 
@@ -24,6 +24,9 @@ export const getSymbolTexture = (shape: number, fill: number) =>
       antialias: window.devicePixelRatio <= 1,
       backgroundColor: 0xc4c4c4,
     })
+
+    app.ticker.autoStart = false
+    app.ticker.stop()
 
     cardsSheet = await Assets.load("assets/cards.json")
 
@@ -43,8 +46,10 @@ export const getSymbolTexture = (shape: number, fill: number) =>
       updateSize()
     }).observe(app.canvas)
 
-    app.ticker.add(() => {
+    const tweenLoop = () => {
       Group.shared.update()
-    })
+      requestAnimationFrame(tweenLoop)
+    }
+    tweenLoop()
   })()
 }
