@@ -8,6 +8,7 @@ export const app = new Application()
 let cardsSheet: Spritesheet
 
 export let bottomStatus: HTMLElement
+export let setCountText: HTMLElement
 
 export const getSymbolTexture = (shape: number, fill: number) =>
   cardsSheet.textures[`symbols/${shape}${fill}.png`]
@@ -16,6 +17,7 @@ export const getSymbolTexture = (shape: number, fill: number) =>
   ;(async () => {
     const gameContainer = document.getElementById("canvas-container")!
     bottomStatus = document.getElementById("bottom-status")!
+    setCountText = document.getElementById("set-count-text")!
 
     await app.init({
       resizeTo: gameContainer,
@@ -36,9 +38,11 @@ export const getSymbolTexture = (shape: number, fill: number) =>
     app.stage.addChild(game)
 
     const updateSize = () => {
+      app.resize()
       const scale = app.renderer.width / totalBoardWidth
       game.scale.set(scale)
       game.y = app.renderer.height / 2 - (totalBoardHeight / 2) * scale
+      app.render()
     }
     updateSize()
 

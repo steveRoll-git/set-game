@@ -1,3 +1,8 @@
+:root {
+  --panel-background-color: rgb(109, 109, 109);
+  --font-size: 28px;
+}
+
 html {
   width: 100%;
   height: 100%;
@@ -31,17 +36,36 @@ body {
   flex-grow: 1;
 }
 
-#bottom-status {
+.status-panel {
   flex-basis: auto;
-  font-size: 28px;
+  font-size: var(--font-size);
   font-family: Arial, Helvetica, sans-serif;
-  text-align: center;
-  padding: 10px 0;
-  background-color: rgb(109, 109, 109);
+  background-color: var(--panel-background-color);
   color: white;
 }
 
+#top-status {
+  display: flex;
+  justify-content: center;
+  font-size: calc(var(--font-size) * 1.2);
+}
+
+.set-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#bottom-status {
+  text-align: center;
+  padding: 10px 0;
+}
+
 @media only screen and (min-width: 1024px) {
+  :root {
+    --panel-background-color: rgb(109, 109, 109);
+    --font-size: 36px;
+  }
   #game-container {
     width: 680px;
     height: 100%;

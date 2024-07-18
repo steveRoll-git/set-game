@@ -1,7 +1,7 @@
 import { Container } from "pixi.js"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
 import { Easing } from "tweedle.js"
-import { bottomStatus } from "./main"
+import { bottomStatus, setCountText } from "./main"
 import { MonitoredTween as Tween } from "./MonitoredTween"
 
 /**
@@ -97,6 +97,8 @@ export class GameContainer extends Container {
     }
     this.updateStatusText(this.deck.length)
 
+    setCountText.innerText = "0"
+
     this.cards = []
 
     for (let i = 0; i < numCardsOnTable; i++) {
@@ -152,6 +154,8 @@ export class GameContainer extends Container {
 
           this.addCard(card.index, 900 + setCards.indexOf(card) * 70, i == 2)
         }
+        this.setsFound += 1
+        setCountText.innerText = this.setsFound.toString()
       } else {
         for (const card of setCards) {
           card.playWrongAnimation()
