@@ -3,6 +3,7 @@ import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
 import { Easing } from "tweedle.js"
 import { bottomStatus, setCountText } from "./main"
 import { MonitoredTween as Tween } from "./MonitoredTween"
+import { pluralNoun } from "./pluralNoun"
 
 /**
  * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 3.
@@ -174,7 +175,9 @@ export class GameContainer extends Container {
         for (const [i, card] of setCards.entries()) {
           card.playCorrectAnimation()
 
-          this.addCard(card.index, 900 + setCards.indexOf(card) * 70, i == 2)
+          if (this.deck.length > 0) {
+            this.addCard(card.index, 900 + setCards.indexOf(card) * 70, i == 2)
+          }
         }
         this.setsFound += 1
         setCountText.innerText = this.setsFound.toString()
@@ -205,7 +208,16 @@ export class GameContainer extends Container {
   }
 
   updateStatusText(cards: number) {
-    bottomStatus.innerText = `${cards} cards left`
+    if (cards == 0) {
+      const sets = getAllSets(this.cards.filter((c) => c).map((c) => c.card))
+      bottomStatus.innerText = `No cards left - ${pluralNoun(
+        sets.length,
+        "set",
+        "remain"
+      )}`
+    } else {
+      bottomStatus.innerText = `${cards} cards left`
+    }
   }
 
   generateHint() {
