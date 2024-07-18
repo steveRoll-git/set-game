@@ -9,6 +9,11 @@ import { MonitoredTween as Tween } from "./MonitoredTween"
  */
 export type Card = [number, number, number, number]
 
+export type Hint = {
+  attribute: number
+  equality: boolean
+}
+
 const isSet = (cards: Card[]) => {
   for (let i = 0; i < 4; i++) {
     if (
@@ -37,6 +42,17 @@ const getAllSets = (cards: Card[]) => {
   }
   return sets
 }
+
+export const cardAttributeNames = ["amounts", "colors", "shapes", "fills"]
+export const equalityStrings = new Map<boolean, string>([
+  [false, "different"],
+  [true, "the same"],
+])
+
+export const hintToString = (hint: Hint) =>
+  `Three cards with <b>${equalityStrings.get(hint.equality)} ${
+    cardAttributeNames[hint.attribute]
+  }</b> make a set here`
 
 const numCardsOnTable = 12
 
@@ -70,6 +86,8 @@ export class GameContainer extends Container {
    * The cards that the user has selected.
    */
   selectedCards: Set<CardSprite> = new Set()
+
+  currentHint: Hint = { equality: false, attribute: 0 }
 
   cardPosition(x: number, y: number) {
     return {
@@ -108,9 +126,9 @@ export class GameContainer extends Container {
     this.setsFound = 0
   }
 
-  addCard(index: number, appearDelay: number, ensureSet: boolean = false) {
+  addCard(index: number, appearDelay: number, finalCard: boolean = false) {
     let card
-    if (ensureSet) {
+    if (finalCard) {
       // Go through every remaining card in the deck and place it in the new spot until a set can be found.
       const testBoard = this.cards.map((c) => c.card)
       let chosenCard
@@ -141,6 +159,10 @@ export class GameContainer extends Container {
     }
 
     this.cards[index] = cardSprite
+
+    if (finalCard) {
+      this.generateHint()
+    }
   }
 
   checkSet() {
@@ -184,5 +206,14 @@ export class GameContainer extends Container {
 
   updateStatusText(cards: number) {
     bottomStatus.innerText = `${cards} cards left`
+  }
+
+  generateHint() {
+    const sets = getAllSets(this.cards.map((c) => c.card))
+    const chosenSet = sets[Math.floor(Math.random() * sets.length)]
+    const chosenAttribute = Math.floor(Math.random() * 4)
+    const equality =
+      chosenSet[0][chosenAttribute] == chosenSet[1][chosenAttribute]
+    this.currentHint = { equality: equality, attribute: chosenAttribute }
   }
 }
