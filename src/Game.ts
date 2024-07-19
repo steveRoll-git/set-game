@@ -6,12 +6,18 @@ import { MonitoredTween as Tween } from "./MonitoredTween"
 import { pluralNoun } from "./pluralNoun"
 
 /**
- * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 3.
+ * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 2.
  */
 export type Card = [number, number, number, number]
 
 export type Hint = {
+  /**
+   * Which attribute this hint is about (0 - 3)
+   */
   attribute: number
+  /**
+   * Whether `attribute` in the hinted set's cards is equal or different in all cards
+   */
   equality: boolean
 }
 
@@ -220,12 +226,37 @@ export class GameContainer extends Container {
     }
   }
 
+  /**
+   * Attempts to generate the most helpful hint for the current board.
+   */
   generateHint() {
     const sets = getAllSets(this.cards.map((c) => c.card))
-    const chosenSet = sets[Math.floor(Math.random() * sets.length)]
-    const chosenAttribute = Math.floor(Math.random() * 4)
-    const equality =
-      chosenSet[0][chosenAttribute] == chosenSet[1][chosenAttribute]
-    this.currentHint = { equality: equality, attribute: chosenAttribute }
+    // First, we try to find a set that has at least one attribute that is equal in all its cards.
+    // These are the easiest to find.
+    const setEqualities = sets.map((set) =>
+      Array.from({ length: 4 }, (_, i) => set[0][i] == set[1][i])
+    )
+    const equalSet = setEqualities.find((set) => set.includes(true))
+    if (equalSet) {
+      this.currentHint = { equality: true, attribute: equalSet.indexOf(true) }
+    } else {
+      // If there are no sets that have an equal attribute in all cards (i.e. all current sets have all-different attributes),
+      // we find the attribute that has the least variants.
+      // (This isn't very helpful if all attributes have the same variance)
+      const attributeCounts = Array.from({ length: 4 }, () =>
+        new Array<number>(3).fill(0)
+      )
+      for (const card of this.cards) {
+        for (const [attribute, value] of card.card.entries()) {
+          attributeCounts[attribute][value] += 1
+        }
+      }
+      const bestAttribute = attributeCounts
+        .map((subArray, index) => ({ min: Math.min(...subArray), index }))
+        .reduce((lowest, current) =>
+          current.min < lowest.min ? current : lowest
+        ).index
+      this.currentHint = { equality: false, attribute: bestAttribute }
+    }
   }
 }
