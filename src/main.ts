@@ -40,7 +40,6 @@ function showHint(hint: string) {
       backgroundColor: 0xc4c4c4,
     })
 
-    app.ticker.autoStart = false
     app.ticker.stop()
 
     cardsSheet = await Assets.load("assets/cards.json")

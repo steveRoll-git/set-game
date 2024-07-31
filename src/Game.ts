@@ -4,6 +4,8 @@ import { Easing } from "tweedle.js"
 import { bottomStatus, setCountText } from "./main"
 import { MonitoredTween as Tween } from "./MonitoredTween"
 import { pluralNoun } from "./pluralNoun"
+import { SymbolExplosion } from "./SymbolExplosion"
+import { randomInt } from "./random"
 
 function notNull<T>(val: T | null): val is T {
   return val !== null
@@ -115,11 +117,12 @@ export class GameContainer extends Container {
       for (let b = 0; b < 3; b++) {
         for (let c = 0; c < 3; c++) {
           for (let d = 0; d < 3; d++) {
-            this.deck.splice(
-              Math.floor(Math.random() * (this.deck.length + 1)),
-              0,
-              [a, b, c, d]
-            )
+            this.deck.splice(randomInt(0, this.deck.length + 1), 0, [
+              a,
+              b,
+              c,
+              d,
+            ])
           }
         }
       }
@@ -133,6 +136,8 @@ export class GameContainer extends Container {
     for (let i = 0; i < numCardsOnTable; i++) {
       this.addCard(i, i * 60, i == numCardsOnTable - 1)
     }
+
+    this.deck = []
 
     this.setsFound = 0
   }
@@ -202,6 +207,8 @@ export class GameContainer extends Container {
           this.updateStatusText()
           if (this.getAllSets().length > 0) {
             this.generateHint()
+          } else {
+            this.playFinishAnimation()
           }
         }
       } else {
@@ -210,6 +217,20 @@ export class GameContainer extends Container {
         }
       }
       this.selectedCards.clear()
+    }
+  }
+
+  playFinishAnimation() {
+    const remainingCards = this.cards.filter(notNull)
+    for (const [index, card] of remainingCards.entries()) {
+      setTimeout(() => {
+        card.playShrinkAnimation().onComplete(() => {
+          const explosion = new SymbolExplosion()
+          this.addChild(explosion)
+          explosion.x = card.x
+          explosion.y = card.y
+        })
+      }, 1000 + index * 300)
     }
   }
 
@@ -233,11 +254,15 @@ export class GameContainer extends Container {
   updateStatusText(cards: number = this.deck.length) {
     if (cards == 0) {
       const sets = this.getAllSets()
-      bottomStatus.innerText = `No cards left - ${pluralNoun(
-        sets.length,
-        "set",
-        "remain"
-      )}`
+      if (sets.length == 0) {
+        bottomStatus.innerText = "No cards left - deck complete!"
+      } else {
+        bottomStatus.innerText = `No cards left - ${pluralNoun(
+          sets.length,
+          "set",
+          "remain"
+        )}`
+      }
     } else {
       bottomStatus.innerText = `${cards} cards left`
     }

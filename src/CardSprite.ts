@@ -6,7 +6,7 @@ import { Card } from "./Game"
 
 export const cardWidth = 166
 export const cardHeight = 109
-const colors = [0xed1c24, 0x16a751, 0x613394]
+export const cardColors = [0xed1c24, 0x16a751, 0x613394]
 const symbolPadding = 10
 
 const hoverOffset = 2
@@ -71,7 +71,7 @@ export class CardSprite extends Container {
       symbolSprite.x = i * (symbolSprite.width + symbolPadding)
       symbolContainer.addChild(symbolSprite)
     }
-    symbolContainer.tint = colors[card[1]]
+    symbolContainer.tint = cardColors[card[1]]
     this.cardContent.addChild(symbolContainer)
     symbolContainer.x = this.width / 2 - symbolContainer.width / 2
     symbolContainer.y = this.height / 2 - symbolContainer.height / 2
@@ -207,15 +207,19 @@ export class CardSprite extends Container {
           .easing(Easing.Sinusoidal.Out)
           .start()
           .onComplete(() => {
-            new Tween(this.shadow).to({ alpha: 0 }, 200).start()
-            new Tween(this.cardContent)
-              .to({ scale: { x: 0, y: 0 } }, 450)
-              .easing(Easing.Cubic.In)
-              .start()
-              .onComplete(() => {
-                this.removeFromParent()
-              })
+            this.playShrinkAnimation()
           })
+      })
+  }
+
+  playShrinkAnimation() {
+    new Tween(this.shadow).to({ alpha: 0 }, 200).start()
+    return new Tween(this.cardContent)
+      .to({ scale: { x: 0, y: 0 } }, 450)
+      .easing(Easing.Cubic.In)
+      .start()
+      .onComplete(() => {
+        this.removeFromParent()
       })
   }
 }

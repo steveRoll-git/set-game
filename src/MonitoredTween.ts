@@ -17,7 +17,9 @@ export class MonitoredTween<T> extends Tween<T> {
       this.secondaryOnComplete?.(object, tween)
       if (runningTweens == 0 && app.ticker.started) {
         setTimeout(() => {
-          app.ticker.stop()
+          if (app.ticker.count <= 1) {
+            app.ticker.stop()
+          }
         }, 1)
       }
     })
