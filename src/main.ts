@@ -15,6 +15,9 @@ let cardsSheet: Spritesheet
 export let bottomStatus: HTMLElement
 export let setCountText: HTMLElement
 export let hintBox: HTMLElement
+export let gameOverFrame: HTMLElement
+export let statsText: HTMLElement
+export let playAgainButton: HTMLElement
 
 export const getSymbolTexture = (shape: number, fill: number) =>
   cardsSheet.textures[`symbols/${shape}${fill}.png`]
@@ -30,6 +33,9 @@ function showHint(hint: string) {
     bottomStatus = document.getElementById("bottom-status")!
     setCountText = document.getElementById("set-count-text")!
     hintBox = document.getElementById("hint-box")!
+    gameOverFrame = document.getElementById("game-over-frame")!
+    statsText = document.getElementById("stats-text")!
+    playAgainButton = document.getElementById("play-again-button")!
     const hintButton = document.getElementById("hint-button")!
 
     await app.init({
@@ -46,7 +52,7 @@ function showHint(hint: string) {
 
     gameContainer.appendChild(app.canvas)
 
-    const game = new GameContainer()
+    let game = new GameContainer()
     app.stage.addChild(game)
 
     const updateSize = () => {
@@ -69,6 +75,9 @@ function showHint(hint: string) {
     tweenLoop()
 
     hintButton.addEventListener("click", () => {
+      if (game.finished) {
+        return
+      }
       showHint(hintToString(game.currentHint))
     })
 
@@ -76,6 +85,14 @@ function showHint(hint: string) {
       if (hintBox.style.display == "block") {
         hintBox.style.display = "none"
       }
+    })
+
+    playAgainButton.addEventListener("click", () => {
+      gameOverFrame.classList.add("hidden")
+      app.stage.removeChild(game)
+      game = new GameContainer()
+      app.stage.addChild(game)
+      updateSize()
     })
   })()
 }

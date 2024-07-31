@@ -214,7 +214,7 @@ export class CardSprite extends Container {
 
   playShrinkAnimation() {
     new Tween(this.shadow).to({ alpha: 0 }, 200).start()
-    return new Tween(this.cardContent)
+    new Tween(this.cardContent)
       .to({ scale: { x: 0, y: 0 } }, 450)
       .easing(Easing.Cubic.In)
       .start()

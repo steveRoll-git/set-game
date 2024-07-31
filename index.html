@@ -14,11 +14,21 @@
           <img src="/icons/set.svg" width="28" />
           <span id="set-count-text">0</span>
         </div>
-        <img src="/icons/lightbulb-on.svg" height="32" id="hint-button" />
+        <img
+          src="/icons/lightbulb-on.svg"
+          height="32"
+          id="hint-button"
+          class="button"
+        />
         <div id="hint-box" style="display: none"></div>
       </div>
       <div id="canvas-container"></div>
       <div id="bottom-status" class="status-panel"></div>
+      <div id="game-over-frame" class="hidden">
+        <div style="margin-bottom: 12px"><b>Game Completed!</b></div>
+        <div id="stats-text"></div>
+        <div id="play-again-button" class="button">Play Again</div>
+      </div>
     </div>
   </body>
 </html>

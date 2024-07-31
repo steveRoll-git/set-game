@@ -1,7 +1,7 @@
 import { Container } from "pixi.js"
 import { cardHeight, CardSprite, cardWidth } from "./CardSprite"
 import { Easing } from "tweedle.js"
-import { bottomStatus, setCountText } from "./main"
+import { bottomStatus, gameOverFrame, setCountText, statsText } from "./main"
 import { MonitoredTween as Tween } from "./MonitoredTween"
 import { pluralNoun } from "./pluralNoun"
 import { SymbolExplosion } from "./SymbolExplosion"
@@ -102,6 +102,10 @@ export class GameContainer extends Container {
 
   currentHint: Hint = { equality: false, attribute: 0 }
 
+  startTime: number = performance.now()
+
+  finished: boolean = false
+
   cardPosition(x: number, y: number) {
     return {
       x: outerPadding + x * (cardWidth + cardGap) + cardWidth / 2,
@@ -136,8 +140,6 @@ export class GameContainer extends Container {
     for (let i = 0; i < numCardsOnTable; i++) {
       this.addCard(i, i * 60, i == numCardsOnTable - 1)
     }
-
-    this.deck = []
 
     this.setsFound = 0
   }
@@ -221,17 +223,34 @@ export class GameContainer extends Container {
   }
 
   playFinishAnimation() {
+    this.finished = true
+    const totalTime = performance.now() - this.startTime
     const remainingCards = this.cards.filter(notNull)
     for (const [index, card] of remainingCards.entries()) {
       setTimeout(() => {
-        card.playShrinkAnimation().onComplete(() => {
+        card.playShrinkAnimation()
+        setTimeout(() => {
           const explosion = new SymbolExplosion()
           this.addChild(explosion)
           explosion.x = card.x
           explosion.y = card.y
-        })
+        }, 450)
       }, 1000 + index * 300)
     }
+    setTimeout(() => {
+      const minutes = Math.floor(totalTime / 1000 / 60)
+        .toString()
+        .padStart(2, "0")
+      const seconds = (Math.floor(totalTime / 1000) % 60)
+        .toString()
+        .padStart(2, "0")
+      statsText.innerHTML = `You found <b>${pluralNoun(
+        this.setsFound,
+        "set"
+      )}</b> in <b>${minutes}:${seconds}</b>.`
+      gameOverFrame.classList.remove("hidden")
+      gameOverFrame.style.animationName = "frame-appear"
+    }, 1000 + remainingCards.length * 300)
   }
 
   cardAppearAnimation(card: CardSprite, delay: number = 0) {
