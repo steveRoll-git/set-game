@@ -5,6 +5,10 @@ import { bottomStatus, setCountText } from "./main"
 import { MonitoredTween as Tween } from "./MonitoredTween"
 import { pluralNoun } from "./pluralNoun"
 
+function notNull<T>(val: T | null): val is T {
+  return val !== null
+}
+
 /**
  * The 4 attributes that make up a card - amount, color, shape and fill. Each one is an integer from 0 to 2.
  */
@@ -82,7 +86,7 @@ export class GameContainer extends Container {
   /**
    * The cards that are currently on the table.
    */
-  cards: CardSprite[]
+  cards: (CardSprite | null)[]
 
   /**
    * The cards in the deck that haven't been placed yet.
@@ -120,7 +124,7 @@ export class GameContainer extends Container {
         }
       }
     }
-    this.updateStatusText(this.deck.length)
+    this.updateStatusText()
 
     setCountText.innerText = "0"
 
@@ -137,7 +141,7 @@ export class GameContainer extends Container {
     let card
     if (finalCard) {
       // Go through every remaining card in the deck and place it in the new spot until a set can be found.
-      const testBoard = this.cards.map((c) => c.card)
+      const testBoard = this.cards.map((c) => c!.card)
       let chosenCard
       let chosenIndex = -1
       do {
@@ -149,6 +153,10 @@ export class GameContainer extends Container {
     } else {
       card = this.deck.pop()!
     }
+    /**
+     * This value is captured here so that the "cards remaining" text will gradually update with each card's
+     * appear animation.
+     */
     const newCardCount = this.deck.length
     const cardSprite = new CardSprite(card, index)
     this.addChild(cardSprite)
@@ -178,15 +186,24 @@ export class GameContainer extends Container {
         (a, b) => a.index - b.index
       )
       if (isSet(setCards.map((s) => s.card))) {
+        const previousDeckLength = this.deck.length
         for (const [i, card] of setCards.entries()) {
           card.playCorrectAnimation()
 
           if (this.deck.length > 0) {
             this.addCard(card.index, 900 + setCards.indexOf(card) * 70, i == 2)
+          } else {
+            this.cards[card.index] = null
           }
         }
         this.setsFound += 1
         setCountText.innerText = this.setsFound.toString()
+        if (this.deck.length == 0 && previousDeckLength == 0) {
+          this.updateStatusText()
+          if (this.getAllSets().length > 0) {
+            this.generateHint()
+          }
+        }
       } else {
         for (const card of setCards) {
           card.playWrongAnimation()
@@ -213,9 +230,9 @@ export class GameContainer extends Container {
       })
   }
 
-  updateStatusText(cards: number) {
+  updateStatusText(cards: number = this.deck.length) {
     if (cards == 0) {
-      const sets = getAllSets(this.cards.filter((c) => c).map((c) => c.card))
+      const sets = this.getAllSets()
       bottomStatus.innerText = `No cards left - ${pluralNoun(
         sets.length,
         "set",
@@ -230,7 +247,7 @@ export class GameContainer extends Container {
    * Attempts to generate the most helpful hint for the current board.
    */
   generateHint() {
-    const sets = getAllSets(this.cards.map((c) => c.card))
+    const sets = this.getAllSets()
     // First, we try to find a set that has at least one attribute that is equal in all its cards.
     // These are the easiest to find.
     const setEqualities = sets.map((set) =>
@@ -247,6 +264,9 @@ export class GameContainer extends Container {
         new Array<number>(3).fill(0)
       )
       for (const card of this.cards) {
+        if (!card) {
+          continue
+        }
         for (const [attribute, value] of card.card.entries()) {
           attributeCounts[attribute][value] += 1
         }
@@ -258,5 +278,9 @@ export class GameContainer extends Container {
         ).index
       this.currentHint = { equality: false, attribute: bestAttribute }
     }
+  }
+
+  getAllSets() {
+    return getAllSets(this.cards.filter(notNull).map((c) => c.card))
   }
 }
